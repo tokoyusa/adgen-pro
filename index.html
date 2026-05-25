@@ -10,6 +10,7 @@
   <meta name="theme-color" content="#0f172a" />
 
   <link rel="manifest" href="manifest.json" />
+
   <link
     rel="apple-touch-icon"
     href="https://ptzueextdvcahhzwetyg.supabase.co/storage/v1/object/public/images/logo%20(1).png"
@@ -74,6 +75,7 @@
       transition: 0.3s ease;
       border: none;
       cursor: pointer;
+      margin-top: 10px;
     }
 
     .btn:hover {
@@ -83,7 +85,6 @@
 
     #installBtn {
       display: none;
-      margin-top: 18px;
       background: #22c55e;
     }
 
@@ -98,6 +99,7 @@
 <body>
 
   <main class="container">
+
     <img
       src="https://ptzueextdvcahhzwetyg.supabase.co/storage/v1/object/public/images/logo%20(1).png"
       alt="Logo Adgen Pro"
@@ -107,55 +109,80 @@
     <h1>Selamat Datang Di Aplikasi</h1>
     <h2>Adgen Pro</h2>
 
-    <a
-      href="https://gemini.google.com/share/a779675b5088"
-      class="btn"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <!-- Tombol Masuk -->
+    <button class="btn" onclick="bukaGemini()">
       Masuk
-    </a>
+    </button>
 
     <br />
 
+    <!-- Tombol Install -->
     <button id="installBtn" class="btn">
       Install Aplikasi
     </button>
 
     <p class="note">
-      Jika tombol install belum muncul, buka halaman ini menggunakan Chrome Android.
+      Install aplikasi untuk pengalaman lebih baik di ponsel.
     </p>
+
   </main>
 
   <script>
+    // =========================
+    // BUKA LINK GEMINI
+    // =========================
+    function bukaGemini() {
+      window.location.href =
+        "https://gemini.google.com/share/af1d6b44e78f";
+    }
+
+    // =========================
+    // PWA INSTALL
+    // =========================
     let deferredPrompt;
+
     const installBtn = document.getElementById("installBtn");
 
-    window.addEventListener("beforeinstallprompt", (event) => {
-      event.preventDefault();
-      deferredPrompt = event;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+
+      deferredPrompt = e;
+
       installBtn.style.display = "inline-block";
     });
 
     installBtn.addEventListener("click", async () => {
+
       if (!deferredPrompt) return;
 
       deferredPrompt.prompt();
+
       await deferredPrompt.userChoice;
 
       deferredPrompt = null;
+
       installBtn.style.display = "none";
     });
 
     window.addEventListener("appinstalled", () => {
       installBtn.style.display = "none";
-      deferredPrompt = null;
     });
 
+    // =========================
+    // SERVICE WORKER
+    // =========================
     if ("serviceWorker" in navigator) {
+
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js");
+
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .then(() => {
+            console.log("Service Worker Registered");
+          });
+
       });
+
     }
   </script>
 
