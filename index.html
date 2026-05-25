@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Selamat Datang - Adgen Pro</title>
+
+  <title>Adgen Pro</title>
+
+  <meta name="description" content="Selamat Datang di Aplikasi Adgen Pro" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link
+    rel="apple-touch-icon"
+    href="https://ptzueextdvcahhzwetyg.supabase.co/storage/v1/object/public/images/logo%20(1).png"
+  />
 
   <style>
     * {
@@ -20,10 +30,11 @@
       justify-content: center;
       align-items: center;
       color: white;
+      padding: 20px;
     }
 
     .container {
-      width: 90%;
+      width: 100%;
       max-width: 420px;
       padding: 40px 30px;
       text-align: center;
@@ -36,6 +47,7 @@
       width: 150px;
       max-width: 100%;
       margin-bottom: 25px;
+      border-radius: 24px;
     }
 
     h1 {
@@ -60,11 +72,26 @@
       font-weight: bold;
       border-radius: 12px;
       transition: 0.3s ease;
+      border: none;
+      cursor: pointer;
     }
 
     .btn:hover {
       background: #0ea5e9;
       transform: scale(1.05);
+    }
+
+    #installBtn {
+      display: none;
+      margin-top: 18px;
+      background: #22c55e;
+    }
+
+    .note {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -88,7 +115,49 @@
     >
       Masuk
     </a>
+
+    <br />
+
+    <button id="installBtn" class="btn">
+      Install Aplikasi
+    </button>
+
+    <p class="note">
+      Jika tombol install belum muncul, buka halaman ini menggunakan Chrome Android.
+    </p>
   </main>
+
+  <script>
+    let deferredPrompt;
+    const installBtn = document.getElementById("installBtn");
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredPrompt = event;
+      installBtn.style.display = "inline-block";
+    });
+
+    installBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+
+      deferredPrompt = null;
+      installBtn.style.display = "none";
+    });
+
+    window.addEventListener("appinstalled", () => {
+      installBtn.style.display = "none";
+      deferredPrompt = null;
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js");
+      });
+    }
+  </script>
 
 </body>
 </html>
