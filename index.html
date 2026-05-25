@@ -10,11 +10,7 @@
   <meta name="theme-color" content="#0f172a" />
 
   <link rel="manifest" href="manifest.json" />
-
-  <link
-    rel="apple-touch-icon"
-    href="https://ptzueextdvcahhzwetyg.supabase.co/storage/v1/object/public/images/logo%20(1).png"
-  />
+  <link rel="apple-touch-icon" href="https://ptzueextdvcahhzwetyg.supabase.co/storage/v1/object/public/images/logo%20(1).png" />
 
   <style>
     * {
@@ -64,8 +60,9 @@
     }
 
     .btn {
-      display: inline-block;
-      padding: 14px 38px;
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
       background: #38bdf8;
       color: #0f172a;
       text-decoration: none;
@@ -75,17 +72,22 @@
       transition: 0.3s ease;
       border: none;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 12px;
+      text-align: center;
     }
 
     .btn:hover {
       background: #0ea5e9;
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
 
     #installBtn {
       display: none;
       background: #22c55e;
+    }
+
+    .copy-btn {
+      background: #facc15;
     }
 
     .note {
@@ -94,12 +96,19 @@
       color: #cbd5e1;
       line-height: 1.5;
     }
+
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #86efac;
+      min-height: 18px;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
 
   <main class="container">
-
     <img
       src="https://ptzueextdvcahhzwetyg.supabase.co/storage/v1/object/public/images/logo%20(1).png"
       alt="Logo Adgen Pro"
@@ -109,80 +118,70 @@
     <h1>Selamat Datang Di Aplikasi</h1>
     <h2>Adgen Pro</h2>
 
-    <!-- Tombol Masuk -->
-    <button class="btn" onclick="bukaGemini()">
+    <a
+      class="btn"
+      href="https://gemini.google.com/share/af1d6b44e78f"
+      target="_blank"
+      rel="noopener noreferrer external"
+    >
       Masuk
+    </a>
+
+    <button class="btn copy-btn" onclick="salinLink()">
+      Salin Link Masuk
     </button>
 
-    <br />
-
-    <!-- Tombol Install -->
     <button id="installBtn" class="btn">
       Install Aplikasi
     </button>
 
-    <p class="note">
-      Install aplikasi untuk pengalaman lebih baik di ponsel.
-    </p>
+    <p id="status" class="status"></p>
 
+    <p class="note">
+      Jika tombol Masuk tidak terbuka di mode aplikasi, tekan Salin Link Masuk lalu tempel di Chrome.
+    </p>
   </main>
 
   <script>
-    // =========================
-    // BUKA LINK GEMINI
-    // =========================
-    function bukaGemini() {
-      window.location.href =
-        "https://gemini.google.com/share/af1d6b44e78f";
+    const GEMINI_URL = "https://gemini.google.com/share/af1d6b44e78f";
+
+    async function salinLink() {
+      const status = document.getElementById("status");
+
+      try {
+        await navigator.clipboard.writeText(GEMINI_URL);
+        status.textContent = "Link berhasil disalin.";
+      } catch (error) {
+        status.textContent = "Salin manual: " + GEMINI_URL;
+      }
     }
 
-    // =========================
-    // PWA INSTALL
-    // =========================
     let deferredPrompt;
-
     const installBtn = document.getElementById("installBtn");
 
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
-
       deferredPrompt = e;
-
-      installBtn.style.display = "inline-block";
+      installBtn.style.display = "block";
     });
 
     installBtn.addEventListener("click", async () => {
-
       if (!deferredPrompt) return;
-
       deferredPrompt.prompt();
-
       await deferredPrompt.userChoice;
-
       deferredPrompt = null;
-
       installBtn.style.display = "none";
     });
 
     window.addEventListener("appinstalled", () => {
       installBtn.style.display = "none";
+      deferredPrompt = null;
     });
 
-    // =========================
-    // SERVICE WORKER
-    // =========================
     if ("serviceWorker" in navigator) {
-
       window.addEventListener("load", () => {
-
-        navigator.serviceWorker
-          .register("./service-worker.js")
-          .then(() => {
-            console.log("Service Worker Registered");
-          });
-
+        navigator.serviceWorker.register("./service-worker.js");
       });
-
     }
   </script>
 
