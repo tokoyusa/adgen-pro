@@ -9,7 +9,7 @@
   <meta name="description" content="Selamat Datang di Aplikasi Adgen Pro" />
   <meta name="theme-color" content="#0f172a" />
 
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="https://ptzueextdvcahhzwetyg.supabase.co/storage/v1/object/public/images/logo%20(1).png" />
 
   <style>
@@ -60,7 +60,7 @@
     }
 
     .btn {
-      display: block;
+      display: inline-block;
       width: 100%;
       padding: 14px 20px;
       background: #38bdf8;
@@ -86,23 +86,11 @@
       background: #22c55e;
     }
 
-    .copy-btn {
-      background: #facc15;
-    }
-
     .note {
       margin-top: 18px;
       font-size: 13px;
       color: #cbd5e1;
       line-height: 1.5;
-    }
-
-    .status {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #86efac;
-      min-height: 18px;
-      word-break: break-word;
     }
   </style>
 </head>
@@ -119,67 +107,65 @@
     <h2>Adgen Pro</h2>
 
     <a
+      id="masukBtn"
       class="btn"
       href="https://gemini.google.com/share/af1d6b44e78f"
       target="_blank"
-      rel="noopener noreferrer external"
+      rel="noopener noreferrer"
     >
       Masuk
     </a>
-
-    <button class="btn copy-btn" onclick="salinLink()">
-      Salin Link Masuk
-    </button>
 
     <button id="installBtn" class="btn">
       Install Aplikasi
     </button>
 
-    <p id="status" class="status"></p>
-
     <p class="note">
-      Jika tombol Masuk tidak terbuka di mode aplikasi, tekan Salin Link Masuk lalu tempel di Chrome.
+      Klik tombol Masuk untuk membuka halaman Gemini.
     </p>
   </main>
 
   <script>
     const GEMINI_URL = "https://gemini.google.com/share/af1d6b44e78f";
 
-    async function salinLink() {
-      const status = document.getElementById("status");
+    const masukBtn = document.getElementById("masukBtn");
 
-      try {
-        await navigator.clipboard.writeText(GEMINI_URL);
-        status.textContent = "Link berhasil disalin.";
-      } catch (error) {
-        status.textContent = "Salin manual: " + GEMINI_URL;
+    masukBtn.addEventListener("click", function(event) {
+      event.preventDefault();
+
+      const opened = window.open(GEMINI_URL, "_blank", "noopener,noreferrer");
+
+      if (!opened) {
+        window.location.assign(GEMINI_URL);
       }
-    }
+    });
 
     let deferredPrompt;
     const installBtn = document.getElementById("installBtn");
 
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = "block";
+    window.addEventListener("beforeinstallprompt", function(event) {
+      event.preventDefault();
+      deferredPrompt = event;
+      installBtn.style.display = "inline-block";
     });
 
-    installBtn.addEventListener("click", async () => {
+    installBtn.addEventListener("click", async function() {
       if (!deferredPrompt) return;
+
       deferredPrompt.prompt();
       await deferredPrompt.userChoice;
+
       deferredPrompt = null;
       installBtn.style.display = "none";
     });
 
-    window.addEventListener("appinstalled", () => {
+    window.addEventListener("appinstalled", function() {
       installBtn.style.display = "none";
       deferredPrompt = null;
     });
 
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
+      window.addEventListener("load", function() {
         navigator.serviceWorker.register("./service-worker.js");
       });
     }
